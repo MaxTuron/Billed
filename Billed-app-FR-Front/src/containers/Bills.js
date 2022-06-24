@@ -51,13 +51,6 @@ export default class {
               }
             }
           })
-        bills.sort(function (a, b) {
-          const dateA = new Date(a.date);
-          const dateB = new Date(b.date);
-          a.date = dateA;
-          b.date = dateB;
-          return b.date - a.date;
-        });
         return bills
       })
     }

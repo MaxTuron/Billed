@@ -9,7 +9,7 @@ const row = (bill) => {
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${formatDate(bill.date)}</td>
+      <td>${bill.date}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -24,6 +24,13 @@ const rows = (data) => {
 }
 
 export default ({ data: bills, loading, error }) => {
+    if(bills !== undefined){
+        bills.sort(function(a, b) {
+            let dateA = new Date(a.date)
+            let dateB = new Date(b.date)
+            return dateB - dateA;
+        });
+    }
 
   const modal = () => (`
     <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -47,7 +54,7 @@ export default ({ data: bills, loading, error }) => {
   } else if (error) {
     return ErrorPage(error)
   }
-  
+
   return (`
     <div class='layout'>
       ${VerticalLayout(120)}
