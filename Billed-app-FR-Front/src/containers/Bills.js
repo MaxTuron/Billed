@@ -37,7 +37,7 @@ export default class {
             try {
               return {
                 ...doc,
-
+                date: doc.date,
                 status: formatStatus(doc.status)
               }
             } catch(e) {
@@ -54,10 +54,10 @@ export default class {
         bills.sort(function (a, b) {
           const dateA = new Date(a.date);
           const dateB = new Date(b.date);
-          console.log(dateA)
-          return dateB - dateA;
+          a.date = dateA;
+          b.date = dateB;
+          return b.date - a.date;
         });
-        console.log(bills);
         return bills
       })
     }
