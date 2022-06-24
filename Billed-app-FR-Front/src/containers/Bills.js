@@ -15,7 +15,6 @@ export default class {
     })
     new Logout({ document, localStorage, onNavigate })
   }
-
   handleClickNewBill = () => {
     this.onNavigate(ROUTES_PATH['NewBill'])
   }
@@ -38,7 +37,7 @@ export default class {
             try {
               return {
                 ...doc,
-                date: formatDate(doc.date),
+
                 status: formatStatus(doc.status)
               }
             } catch(e) {
@@ -52,7 +51,13 @@ export default class {
               }
             }
           })
-          console.log('length', bills.length)
+        bills.sort(function (a, b) {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          console.log(dateA)
+          return dateB - dateA;
+        });
+        console.log(bills);
         return bills
       })
     }
