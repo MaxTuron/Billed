@@ -43,6 +43,7 @@ export default class NewBill {
           }).catch(error => console.error(error))
 
     }else{
+      //Besoin de refresh la page ? On doit garder le form si il est déjà remplis ?
       alert("Le fichier doit avoir un format jpg, jpeg ou png !")
       file.value = null
     }
