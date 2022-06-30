@@ -147,6 +147,7 @@ export default class {
       this.counter ++
     }
 
+    //Chagement du tableau bills par un tableau trier car cela appliquer l'eventListener plusieurs fois.
     filteredBills(bills, getStatus(this.index)).forEach(bill => {
       $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
     })

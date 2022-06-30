@@ -9,7 +9,6 @@ const row = (bill) => {
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <!-- Mauvais format de date mais Jest ok, avec formDate -> bon format mais Jest ne passe pas--> 
       <td>${bill.date}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
@@ -24,6 +23,7 @@ const rows = (data) => {
     return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
 }
 
+//Tri des factures
 export default ({ data: bills, loading, error }) => {
     if(bills !== undefined){
         bills.sort(function(a, b) {
