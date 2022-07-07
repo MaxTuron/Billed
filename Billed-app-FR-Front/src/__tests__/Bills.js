@@ -50,17 +50,21 @@ describe("Given I am connected as an employee", () => {
         document.body.append(root)
         router()
         window.onNavigate(ROUTES_PATH.Bills)
-        $.fn.modal = jest.fn(); // Corrige l'erreur Jquerry $(...).modal is not a function
+        $.fn.modal = jest.fn();
 
-        await waitFor(() => screen.getAllByTestId('icon-eye'))
-        const firstIconEyeButton = screen.getAllByTestId("icon-eye")[0];
-        userEvent.click(firstIconEyeButton);
-        await waitFor(() => screen.getByAltText("Bill"));
-        const billImage = screen.getByAltText("Bill");
-        expect(billImage).toHaveAttribute(
-            "src",
-            "https://test.storage.tld/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a"
-        );
+        const store = null
+        const bill = new Bills({
+          document, onNavigate, store, localStorage: window.localStorage
+        })
+
+        const eye = screen.getAllByTestId('icon-eye')
+        const handleClickIconEye = jest.fn(bill.handleClickIconEye(eye[0]))
+        eye[0].addEventListener('click', handleClickIconEye)
+        userEvent.click(eye[0])
+        expect(handleClickIconEye).toHaveBeenCalled()
+
+        const modale = document.getElementById('modaleFile')
+        expect(modale).toBeTruthy()
       })
     })
 
@@ -96,11 +100,9 @@ describe("Given I am connected as an employee", () => {
           router()
           window.onNavigate(ROUTES_PATH.Bills)
 
-          await waitFor(() => screen.getAllByTestId("icon-window"))
-          const billName = await screen.getByText("Nom")
-          expect(billName).toBeTruthy()
-          const billAmount = await screen.getAllByText("Montant")
-          expect(billAmount).toBeTruthy()
+          await waitFor(() => screen.getByText("Mes notes de frais"))
+          const nouvelleNote = await screen.getByText("Nouvelle note de frais")
+          expect(nouvelleNote).toBeTruthy()
           expect(screen.getAllByTestId("btn-new-bill")).toBeTruthy()
 
         })
