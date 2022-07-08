@@ -87,6 +87,10 @@ describe("Given I am connected as an employee", () => {
         fireEvent.submit(form);
 
         expect(HandleSubmit).toHaveBeenCalled();
+
+        await waitFor(() => {
+          expect(screen.getByText("Mes notes de frais")).toBeTruthy();
+        })
       })
     })
   })
