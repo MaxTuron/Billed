@@ -8,90 +8,106 @@ import userEvent from "@testing-library/user-event"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import BillsUI from "../views/BillsUI.js"
-import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
+import Bills from "../containers/Bills.js"
+import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import mockStore from "../__mocks__/store"
 import { bills } from "../fixtures/bills"
 import router from "../app/Router"
-import store from '../__mocks__/store';
 
-jest.mock('../app/store', () => mockStore);
+jest.mock("../app/store", () => mockStore)
 
-describe("Given I am connected as an employee", () => {
+
+describe("Given I am a user connected as Employee", () => {
   describe("When I am on NewBill Page", () => {
-    test("Then I click on the browser button and check if the file have the correct extention", async () => {
-      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee'
-      }))
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.NewBill)
+        test("The button and check if the file have the correct extention", async () => {
+          localStorage.setItem("user", JSON.stringify({type: "Employee", email: "a@a"}));
+          const root = document.createElement("div")
+          root.setAttribute("id", "root")
+          document.body.append(root)
+          router()
+          window.onNavigate(ROUTES_PATH.NewBill)
+          const file = new File(["hello"], 'hello.png', {type: 'image/png'});
 
-      const file = new File(["hello"], 'hello.png', {type: 'image/png'});
-
-      await waitFor(() => screen.getByTestId('file'))
-      const btnAddFile = screen.getByTestId('file')
-      const typeFiles = "image/png"
-      await waitFor(() =>
-          fireEvent.change(btnAddFile, {
-            target: {files: [file]},
-          })
-      );
-      let image = screen.getByTestId("file");
-      expect(image.files[0].type).toEqual(typeFiles)
-    })
-
-    describe("When I am on NewBill Page", () => {
-      test("API test POST", async () => {
-        const newBill = new NewBill({
-          document,
-          onNavigate,
-          store: mockStore,
-          localStorage: window.localStorage,
-        });
-
-        const inputData = {
-          vat: "20",
-          type: "Hôtel et logement",
-          commentary: "",
-          name: "AAAZZZaaazz0.123456789",
-          date: "2021-11-22",
-          amount: "120",
-          pct: "20"
-        };
-
-        const form = screen.getByTestId("form-new-bill");
-
-        const type = screen.getByTestId("expense-type");
-        const name = screen.getByTestId("expense-name");
-        const date = screen.getByTestId("datepicker");
-        const amount = screen.getByTestId("amount");
-        const vat = screen.getByTestId("vat");
-        const pct = screen.getByTestId("pct");
-        const commentary = screen.getByTestId("commentary");
-
-        fireEvent.change(type, {target: {value: inputData.type}});
-        fireEvent.change(name, {target: {value: inputData.name}});
-        fireEvent.change(date, {target: {value: inputData.date}});
-        fireEvent.change(amount, {target: {value: inputData.amount}});
-        fireEvent.change(vat, {target: {value: inputData.vat}});
-        fireEvent.change(pct, {target: {value: inputData.pct}});
-        fireEvent.change(commentary, {target: {value: inputData.commentary}});
-
-
-        const HandleSubmit = jest.fn(newBill.handleSubmit);
-        form.addEventListener("submit",HandleSubmit);
-        fireEvent.submit(form);
-
-        expect(HandleSubmit).toHaveBeenCalled();
-
-        await waitFor(() => {
-          expect(screen.getByText("Mes notes de frais")).toBeTruthy();
+          await waitFor(() => screen.getByTestId('file'))
+          const btnAddFile = screen.getByTestId('file')
+          const typesFiles = "image/png"
+          await waitFor(() =>
+              fireEvent.change(btnAddFile, {
+                target: {files: [file]},
+              })
+          );
+          let image = screen.getByTestId("file");
+          expect(image.files[0].type).toEqual(typesFiles)
         })
       })
-    })
-  })
+
+      // test d'intégration POST
+      describe("Given I am a user connected as Employee", () => {
+        describe("When I navigate to Bill page", () => {
+          test("fetches New Bills from mock API", async () => {
+            beforeEach(() => {
+              jest.spyOn(mockStore, "bills");
+              Object.defineProperty(window, "localStorage", {
+                value: localStorageMock,
+              });
+              window.localStorage.setItem(
+                  "user",
+                  JSON.stringify({
+                    type: "Employee",
+                    email: "a@a",
+                  })
+              );
+            });
+          });
+          describe("When an error occurs on API", () => {
+            beforeEach(() => {
+              jest.spyOn(mockStore, "bills");
+              Object.defineProperty(window, "localStorage", {
+                value: localStorageMock,
+              });
+              window.localStorage.setItem(
+                  "user",
+                  JSON.stringify({
+                    type: "Employee",
+                    email: "a@a",
+                  })
+              );
+              const root = document.createElement("div");
+              root.setAttribute("id", "root");
+              document.body.appendChild(root);
+              router();
+            });
+            test("fetches bills from an API and fails with 404 message error", async () => {
+              mockStore.bills.mockImplementationOnce(() => {
+                return {
+                  list: () => {
+                    return Promise.reject(new Error("Erreur 404"));
+                  },
+                };
+              });
+              window.onNavigate(ROUTES_PATH["Bills"]);
+              await new Promise(process.nextTick);
+              const message = screen.getByText(/Erreur 404/);
+              expect(message).toBeTruthy();
+            });
+
+            test("fetches messages from an API and fails with 500 message error", async () => {
+              mockStore.bills.mockImplementationOnce(() => {
+                return {
+                  list: () => {
+                    return Promise.reject(new Error("Erreur 500"));
+                  },
+                };
+              });
+
+              window.onNavigate(ROUTES_PATH["Bills"]);
+              await new Promise(process.nextTick);
+              const message = screen.getByText(/Erreur 500/);
+              expect(message).toBeTruthy();
+            })
+          })
+        })
+      })
 })
+
