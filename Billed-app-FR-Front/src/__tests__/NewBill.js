@@ -12,6 +12,7 @@ import Bills from "../containers/Bills.js"
 import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import mockStore from "../__mocks__/store"
+import store from '../__mocks__/store';
 import { bills } from "../fixtures/bills"
 import router from "../app/Router"
 
@@ -20,7 +21,7 @@ jest.mock("../app/store", () => mockStore)
 
 describe("Given I am a user connected as Employee", () => {
   describe("When I am on NewBill Page", () => {
-    test("The button and check if the file have the correct extention", async () => {
+    test("The button add check if the file have the correct extention", async () => {
       localStorage.setItem("user", JSON.stringify({type: "Employee", email: "a@a"}));
       const root = document.createElement("div")
       root.setAttribute("id", "root")
@@ -44,29 +45,12 @@ describe("Given I am a user connected as Employee", () => {
   // test d'intégration POST
   describe("Given I am a user connected as Employee", () => {
     describe("When I submit a new bill", () => {
-      test('Then it should send the new bill to the mock API POST', async () => {
-        const postSpy = jest.spyOn(mockStore, 'bills');
+      test('Then it should add the new bill ', async () => {
+        const postSpy = jest.spyOn(store, 'bills');
+        const bills = store.bills();
 
-        const newBill = {
-          id: "47qAXb6fIm2zOKkLzMro",
-          vat: "80",
-          fileUrl:
-              "https://test.storage.tld/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a",
-          status: "pending",
-          type: "Hôtel et logement",
-          commentary: "séminaire billed",
-          name: "encore",
-          fileName: "preview-facture-free-201801-pdf-1.jpg",
-          date: "2004-04-04",
-          amount: 400,
-          commentAdmin: "ok",
-          email: "a@a",
-          pct: 20,
-        };
-
-        const bills = mockStore.bills(newBill);
         expect(postSpy).toHaveBeenCalledTimes(1);
-        expect((await bills.list()).length).toBe(4);
+        expect(bills.update.length).toBe(1);
       });
       describe("When an error occurs on API", () => {
         beforeEach(() => {
