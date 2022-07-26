@@ -43,21 +43,30 @@ describe("Given I am a user connected as Employee", () => {
   })
   // test d'intégration POST
   describe("Given I am a user connected as Employee", () => {
-    describe("When I navigate to Bill page", () => {
-      test("fetches New Bills from mock API", async () => {
-        beforeEach(() => {
-          jest.spyOn(mockStore, "bills");
-          Object.defineProperty(window, "localStorage", {
-            value: localStorageMock,
-          });
-          window.localStorage.setItem(
-              "user",
-              JSON.stringify({
-                type: "Employee",
-                email: "a@a",
-              })
-          );
-        });
+    describe("When I submit a new bill", () => {
+      test('Then it should send the new bill to the mock API POST', async () => {
+        const postSpy = jest.spyOn(mockStore, 'bills');
+
+        const newBill = {
+          id: "47qAXb6fIm2zOKkLzMro",
+          vat: "80",
+          fileUrl:
+              "https://test.storage.tld/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a",
+          status: "pending",
+          type: "Hôtel et logement",
+          commentary: "séminaire billed",
+          name: "encore",
+          fileName: "preview-facture-free-201801-pdf-1.jpg",
+          date: "2004-04-04",
+          amount: 400,
+          commentAdmin: "ok",
+          email: "a@a",
+          pct: 20,
+        };
+
+        const bills = mockStore.bills(newBill);
+        expect(postSpy).toHaveBeenCalledTimes(1);
+        expect((await bills.list()).length).toBe(4);
       });
       describe("When an error occurs on API", () => {
         beforeEach(() => {
