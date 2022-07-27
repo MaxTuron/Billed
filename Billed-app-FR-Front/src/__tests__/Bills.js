@@ -27,6 +27,7 @@ describe("Given I am connected as an employee", () => {
       document.body.append(root)
       router()
       window.onNavigate(ROUTES_PATH.Bills)
+
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
       expect(windowIcon.classList).toContain('active-icon');
@@ -100,7 +101,7 @@ describe("Given I am connected as an employee", () => {
           router()
           window.onNavigate(ROUTES_PATH.Bills)
 
-          await waitFor(() => screen.getByText("Mes notes de frais"))
+          await waitFor(() => screen.getByText("Transports"))
           const nouvelleNote = await screen.getByText("Nouvelle note de frais")
           expect(nouvelleNote).toBeTruthy()
           expect(screen.getAllByTestId("btn-new-bill")).toBeTruthy()

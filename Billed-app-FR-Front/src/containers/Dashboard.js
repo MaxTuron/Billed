@@ -6,6 +6,16 @@ import USERS_TEST from '../constants/usersTest.js'
 import Logout from "./Logout.js"
 
 export const filteredBills = (data, status) => {
+
+  if(data !== undefined){
+    data.sort(function(a, b) {
+      let dateA = new Date(a.date)
+      let dateB = new Date(b.date)
+      return dateB - dateA;
+    });
+  }
+
+
   return (data && data.length) ?
     data.filter(bill => {
       let selectCondition

@@ -42,6 +42,7 @@ describe("Given I am a user connected as Employee", () => {
       expect(image.files[0].type).toEqual(typesFiles)
     })
   })
+
   // test d'intégration POST
   describe("Given I am a user connected as Employee", () => {
     describe("When I submit a new bill", () => {
